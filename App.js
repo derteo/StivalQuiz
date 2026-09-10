@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import FreeTextAnswer from './src/components/FreeTextAnswer';
 import MultipleChoiceAnswer from './src/components/MultipleChoiceAnswer';
 import { useGame } from './src/hooks/useGame';
 import { getBestScore, saveScore } from './src/storage/scores';
@@ -15,8 +16,9 @@ const COLORS = {
 
 export default function App() {
   const [screen, setScreen] = useState('home');
+  const [mode, setMode] = useState('multiple');
   const [bestScore, setBestScore] = useState(0);
-  const game = useGame();
+  const game = useGame(mode);
 
   useEffect(() => {
     getBestScore().then(setBestScore);
@@ -42,6 +44,22 @@ export default function App() {
         <Text style={styles.title}>Indovina la Provincia</Text>
         <Text style={styles.subtitle}>Ti mostriamo una città italiana: indovina la provincia!</Text>
         <Text style={styles.bestScore}>Miglior punteggio: {bestScore}</Text>
+
+        <View style={styles.modeRow}>
+          <TouchableOpacity
+            style={[styles.modeButton, mode === 'multiple' && styles.modeButtonActive]}
+            onPress={() => setMode('multiple')}
+          >
+            <Text style={styles.modeButtonText}>Scelta multipla</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.modeButton, mode === 'free' && styles.modeButtonActive]}
+            onPress={() => setMode('free')}
+          >
+            <Text style={styles.modeButtonText}>Risposta libera</Text>
+          </TouchableOpacity>
+        </View>
+
         <TouchableOpacity style={styles.startButton} onPress={startGame} activeOpacity={0.85}>
           <Text style={styles.startButtonText}>Inizia</Text>
         </TouchableOpacity>
@@ -57,13 +75,24 @@ export default function App() {
           Domanda {game.questionIndex + 1}/{game.totalQuestions} · Punteggio: {game.score}
         </Text>
         <Text style={styles.cityName}>{game.currentCity.city}?</Text>
-        <MultipleChoiceAnswer
-          options={game.options}
-          correctProvince={game.currentCity.province}
-          status={game.status}
-          selected={game.selected}
-          onAnswer={game.answer}
-        />
+        {mode === 'multiple' && (
+          <MultipleChoiceAnswer
+            options={game.options}
+            correctProvince={game.currentCity.province}
+            status={game.status}
+            selected={game.selected}
+            onAnswer={game.answer}
+          />
+        )}
+        {mode === 'free' && (
+          <FreeTextAnswer
+            key={game.currentCity.city}
+            correctProvince={game.currentCity.province}
+            status={game.status}
+            selected={game.selected}
+            onSubmit={game.answer}
+          />
+        )}
         {game.status === 'answered' && (
           <TouchableOpacity style={styles.startButton} onPress={game.next} activeOpacity={0.85}>
             <Text style={styles.startButtonText}>Avanti</Text>
@@ -108,4 +137,14 @@ const styles = StyleSheet.create({
     marginTop: 24,
   },
   startButtonText: { color: COLORS.buttonText, fontSize: 17, fontWeight: '700' },
+  modeRow: { flexDirection: 'row', gap: 10, marginBottom: 24 },
+  modeButton: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+  },
+  modeButtonActive: { backgroundColor: COLORS.primary },
+  modeButtonText: { color: COLORS.text, fontWeight: '600', fontSize: 13 },
 });

@@ -23,7 +23,7 @@ function buildOptions(correctProvince) {
   return shuffle([correctProvince, ...wrongOptions]);
 }
 
-export function useGame() {
+export function useGame(mode = 'multiple') {
   const [questions, setQuestions] = useState(() => pickQuestions());
   const [questionIndex, setQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -34,9 +34,9 @@ export function useGame() {
   const totalQuestions = questions.length;
 
   const options = useMemo(
-    () => (currentCity ? buildOptions(currentCity.province) : []),
+    () => (currentCity && mode === 'multiple' ? buildOptions(currentCity.province) : []),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentCity?.city]
+    [currentCity?.city, mode]
   );
 
   const answer = useCallback(
