@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import FreeTextAnswer from './src/components/FreeTextAnswer';
+import ItalyRegionMap from './src/components/ItalyRegionMap';
 import MultipleChoiceAnswer from './src/components/MultipleChoiceAnswer';
 import { useGame } from './src/hooks/useGame';
 import { getBestScore, saveScore } from './src/storage/scores';
@@ -58,6 +59,12 @@ export default function App() {
           >
             <Text style={styles.modeButtonText}>Risposta libera</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.modeButton, mode === 'region' && styles.modeButtonActive]}
+            onPress={() => setMode('region')}
+          >
+            <Text style={styles.modeButtonText}>Regione sulla mappa</Text>
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity style={styles.startButton} onPress={startGame} activeOpacity={0.85}>
@@ -91,6 +98,14 @@ export default function App() {
             status={game.status}
             selected={game.selected}
             onSubmit={game.answer}
+          />
+        )}
+        {mode === 'region' && (
+          <ItalyRegionMap
+            correctRegion={game.currentCity.region}
+            status={game.status}
+            selected={game.selected}
+            onSelect={game.answer}
           />
         )}
         {game.status === 'answered' && (

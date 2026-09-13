@@ -32,6 +32,7 @@ export function useGame(mode = 'multiple') {
 
   const currentCity = questions[questionIndex];
   const totalQuestions = questions.length;
+  const targetField = mode === 'region' ? 'region' : 'province';
 
   const options = useMemo(
     () => (currentCity && mode === 'multiple' ? buildOptions(currentCity.province) : []),
@@ -44,9 +45,9 @@ export function useGame(mode = 'multiple') {
       if (status !== 'playing') return;
       setSelected(value);
       setStatus('answered');
-      if (value === currentCity.province) setScore((s) => s + 1);
+      if (value === currentCity[targetField]) setScore((s) => s + 1);
     },
-    [status, currentCity]
+    [status, currentCity, targetField]
   );
 
   const next = useCallback(() => {
