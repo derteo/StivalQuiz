@@ -1,17 +1,9 @@
 import Svg, { Path } from 'react-native-svg';
+import { useTheme } from '../context/ThemeContext';
 import { ITALY_MAP_VIEWBOX, ITALY_REGIONS_PATHS } from '../data/italyRegionsMap';
 
-const COLORS = {
-  card: '#ffffff',
-  border: '#dbe9e2',
-  correctBg: '#d4f0df',
-  correctBorder: '#1f9d5c',
-  wrongBg: '#fbdfdc',
-  wrongBorder: '#d64545',
-  modeActiveBg: '#e2f5ec',
-};
-
 export default function ItalyRegionMap({ correctRegion, status, selected, onSelect }) {
+  const { colors } = useTheme();
   const answered = status === 'answered';
 
   return (
@@ -20,16 +12,16 @@ export default function ItalyRegionMap({ correctRegion, status, selected, onSele
         const isCorrect = name === correctRegion;
         const isSelected = name === selected;
 
-        let fill = COLORS.card;
-        let stroke = COLORS.border;
+        let fill = colors.card;
+        let stroke = colors.border;
         if (answered && isCorrect) {
-          fill = COLORS.correctBg;
-          stroke = COLORS.correctBorder;
+          fill = colors.correctBg;
+          stroke = colors.correctBorder;
         } else if (answered && isSelected && !isCorrect) {
-          fill = COLORS.wrongBg;
-          stroke = COLORS.wrongBorder;
+          fill = colors.wrongBg;
+          stroke = colors.wrongBorder;
         } else if (isSelected) {
-          fill = COLORS.modeActiveBg;
+          fill = colors.modeActiveBg;
         }
 
         return (

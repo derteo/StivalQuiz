@@ -1,27 +1,14 @@
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 import { ALL_PROVINCES } from '../data/cities';
 
 const MAX_SUGGESTIONS = 5;
 
-const COLORS = {
-  card: '#ffffff',
-  text: '#1f2a24',
-  textMuted: '#6b8077',
-  textSubtle: '#39514a',
-  primaryDark: '#0b5f4d',
-  border: '#dbe9e2',
-  correctBg: '#d4f0df',
-  correctBorder: '#1f9d5c',
-  wrongBg: '#fbdfdc',
-  wrongBorder: '#d64545',
-  modeActiveBg: '#e2f5ec',
-};
-
 export default function FreeTextAnswer({ correctProvince, status, selected, onSubmit }) {
+  const { colors } = useTheme();
   const [text, setText] = useState('');
   const answered = status === 'answered';
-  const colors = COLORS;
 
   const query = text.trim().toLowerCase();
   const suggestions = query

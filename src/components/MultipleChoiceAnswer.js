@@ -1,16 +1,8 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-const COLORS = {
-  card: '#ffffff',
-  text: '#1f2a24',
-  border: '#dbe9e2',
-  correctBg: '#d4f0df',
-  correctBorder: '#1f9d5c',
-  wrongBg: '#fbdfdc',
-  wrongBorder: '#d64545',
-};
+import { useTheme } from '../context/ThemeContext';
 
 export default function MultipleChoiceAnswer({ options, correctProvince, status, selected, onAnswer }) {
+  const { colors } = useTheme();
   const answered = status === 'answered';
 
   return (
@@ -19,14 +11,14 @@ export default function MultipleChoiceAnswer({ options, correctProvince, status,
         const isCorrect = option === correctProvince;
         const isSelected = option === selected;
 
-        let bg = COLORS.card;
-        let border = COLORS.border;
+        let bg = colors.card;
+        let border = colors.border;
         if (answered && isCorrect) {
-          bg = COLORS.correctBg;
-          border = COLORS.correctBorder;
+          bg = colors.correctBg;
+          border = colors.correctBorder;
         } else if (answered && isSelected && !isCorrect) {
-          bg = COLORS.wrongBg;
-          border = COLORS.wrongBorder;
+          bg = colors.wrongBg;
+          border = colors.wrongBorder;
         }
 
         return (
@@ -37,7 +29,7 @@ export default function MultipleChoiceAnswer({ options, correctProvince, status,
             activeOpacity={0.8}
             onPress={() => onAnswer(option)}
           >
-            <Text style={[styles.optionText, { color: COLORS.text }]}>{option}</Text>
+            <Text style={[styles.optionText, { color: colors.text }]}>{option}</Text>
           </TouchableOpacity>
         );
       })}

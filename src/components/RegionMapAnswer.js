@@ -1,13 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 import ItalyRegionMap from './ItalyRegionMap';
 
-const COLORS = {
-  textMuted: '#6b8077',
-  correctBorder: '#1f9d5c',
-  wrongBorder: '#d64545',
-};
-
 export default function RegionMapAnswer({ correctRegion, status, selected, onSubmit }) {
+  const { colors } = useTheme();
   const answered = status === 'answered';
   const isCorrect = selected === correctRegion;
 
@@ -15,10 +11,10 @@ export default function RegionMapAnswer({ correctRegion, status, selected, onSub
     <View>
       <ItalyRegionMap correctRegion={correctRegion} status={status} selected={selected} onSelect={onSubmit} />
 
-      {!answered && <Text style={[styles.hint, { color: COLORS.textMuted }]}>Tocca la regione sulla mappa</Text>}
+      {!answered && <Text style={[styles.hint, { color: colors.textMuted }]}>Tocca la regione sulla mappa</Text>}
 
       {answered && (
-        <Text style={[styles.feedback, { color: isCorrect ? COLORS.correctBorder : COLORS.wrongBorder }]}>
+        <Text style={[styles.feedback, { color: isCorrect ? colors.correctBorder : colors.wrongBorder }]}>
           {isCorrect
             ? `Corretto: ${correctRegion}`
             : `Hai scelto ${selected} — la risposta giusta è ${correctRegion}`}
