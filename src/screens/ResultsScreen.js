@@ -9,7 +9,7 @@ function getFeedback(ratio) {
 }
 
 export default function ResultsScreen({ route, navigation }) {
-  const { score, total, bestScore, mode } = route.params;
+  const { score, total, bestScore, mode, answers } = route.params;
   const { colors } = useTheme();
   const ratio = total > 0 ? score / total : 0;
 
@@ -34,6 +34,14 @@ export default function ResultsScreen({ route, navigation }) {
         <Text style={[styles.primaryButtonText, { color: colors.buttonText }]}>Gioca ancora</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity
+        style={[styles.secondaryOutlineButton, { borderColor: colors.border }]}
+        onPress={() => navigation.navigate('Report', { answers, mode })}
+        activeOpacity={0.85}
+      >
+        <Text style={[styles.secondaryOutlineButtonText, { color: colors.text }]}>Rivedi le risposte</Text>
+      </TouchableOpacity>
+
       <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.popToTop()} activeOpacity={0.7}>
         <Text style={[styles.secondaryButtonText, { color: colors.textSubtle }]}>Torna alla home</Text>
       </TouchableOpacity>
@@ -50,6 +58,16 @@ const styles = StyleSheet.create({
   bestScoreText: { fontSize: 14, marginBottom: 36 },
   primaryButton: { paddingVertical: 16, paddingHorizontal: 48, borderRadius: 30, marginBottom: 14, width: '100%', alignItems: 'center' },
   primaryButtonText: { fontSize: 17, fontWeight: '700' },
+  secondaryOutlineButton: {
+    borderWidth: 2,
+    borderRadius: 30,
+    paddingVertical: 14,
+    paddingHorizontal: 48,
+    width: '100%',
+    alignItems: 'center',
+    marginBottom: 14,
+  },
+  secondaryOutlineButtonText: { fontSize: 16, fontWeight: '700' },
   secondaryButton: { paddingVertical: 10 },
   secondaryButtonText: { fontSize: 15, fontWeight: '600' },
 });

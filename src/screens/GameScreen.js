@@ -5,23 +5,25 @@ import ItalyRegionMap from '../components/ItalyRegionMap';
 import MultipleChoiceAnswer from '../components/MultipleChoiceAnswer';
 import { useTheme } from '../context/ThemeContext';
 import { useGame } from '../hooks/useGame';
-import { getBestScore, saveScore } from '../storage/scores';
+import { saveGameResult } from '../storage/scores';
 
 export default function GameScreen({ route, navigation }) {
   const { mode } = route.params;
   const { colors } = useTheme();
-  const { currentCity, options, questionIndex, totalQuestions, score, status, selected, answer, next } =
+  const { currentCity, options, questionIndex, totalQuestions, score, status, selected, answers, answer, next } =
     useGame(mode);
 
   useEffect(() => {
     if (status !== 'finished') return;
     let cancelled = false;
 
-    saveScore(score).then(({ bestScore }) => {
-      if (!cancelled) {
-        navigation.replace('Results', { score, total: totalQuestions, bestScore, mode });
+    saveGameResult({ score, total: totalQuestions, date: new Date().toISOString(), mode }).then(
+      ({ bestScore, isNewBest }) => {
+        if (!cancelled) {
+          navigation.replace('Results', { score, total: totalQuestions, bestScore, isNewBest, mode, answers });
+        }
       }
-    });
+    );
 
     return () => {
       cancelled = true;
@@ -72,7 +74,11 @@ export default function GameScreen({ route, navigation }) {
       )}
 
       {status === 'answered' && (
-        <TouchableOpacity style={[styles.nextButton, { backgroundColor: colors.primary }]} onPress={next} activeOpacity={0.85}>
+        <TouchableOpacity
+          style={[styles.nextButton, { backgroundColor: colors.primary }]}
+          onPress={next}
+          activeOpacity={0.85}
+        >
           <Text style={[styles.nextButtonText, { color: colors.buttonText }]}>
             {questionIndex + 1 >= totalQuestions ? 'Vedi risultato' : 'Avanti'}
           </Text>

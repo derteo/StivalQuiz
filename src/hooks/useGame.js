@@ -29,6 +29,7 @@ export function useGame(mode = 'multiple') {
   const [score, setScore] = useState(0);
   const [status, setStatus] = useState('playing');
   const [selected, setSelected] = useState(null);
+  const [answers, setAnswers] = useState([]);
 
   const currentCity = questions[questionIndex];
   const totalQuestions = questions.length;
@@ -45,7 +46,12 @@ export function useGame(mode = 'multiple') {
       if (status !== 'playing') return;
       setSelected(value);
       setStatus('answered');
-      if (value === currentCity[targetField]) setScore((s) => s + 1);
+      const isCorrect = value === currentCity[targetField];
+      setAnswers((prev) => [
+        ...prev,
+        { city: currentCity.city, correctAnswer: currentCity[targetField], givenAnswer: value, isCorrect },
+      ]);
+      if (isCorrect) setScore((s) => s + 1);
     },
     [status, currentCity, targetField]
   );
@@ -66,7 +72,8 @@ export function useGame(mode = 'multiple') {
     setScore(0);
     setSelected(null);
     setStatus('playing');
+    setAnswers([]);
   }, []);
 
-  return { currentCity, options, questionIndex, totalQuestions, score, status, selected, answer, next, restart };
+  return { currentCity, options, questionIndex, totalQuestions, score, status, selected, answers, answer, next, restart };
 }
