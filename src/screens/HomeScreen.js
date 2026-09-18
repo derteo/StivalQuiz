@@ -1,6 +1,7 @@
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ModeStatsChart from '../components/ModeStatsChart';
 import { GAME_MODES, MODE_LABELS } from '../constants/modes';
 import { useTheme } from '../context/ThemeContext';
@@ -8,6 +9,7 @@ import { getLastResult, getModeStats } from '../storage/scores';
 
 export default function HomeScreen({ navigation }) {
   const { colors, scheme, toggleTheme } = useTheme();
+  const insets = useSafeAreaInsets();
   const [mode, setMode] = useState('multiple');
   const [lastResult, setLastResult] = useState(null);
   const [modeStats, setModeStats] = useState([]);
@@ -33,7 +35,10 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
       <TouchableOpacity
-        style={[styles.themeToggle, { backgroundColor: colors.card, borderColor: colors.border }]}
+        style={[
+          styles.themeToggle,
+          { backgroundColor: colors.card, borderColor: colors.border, top: insets.top + 12 },
+        ]}
         onPress={toggleTheme}
         activeOpacity={0.7}
       >
@@ -102,7 +107,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28 },
   themeToggle: {
     position: 'absolute',
-    top: 20,
     right: 20,
     width: 40,
     height: 40,

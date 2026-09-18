@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FreeTextAnswer from '../components/FreeTextAnswer';
 import ItalyRegionMap from '../components/ItalyRegionMap';
 import MultipleChoiceAnswer from '../components/MultipleChoiceAnswer';
@@ -10,6 +11,7 @@ import { saveGameResult } from '../storage/scores';
 export default function GameScreen({ route, navigation }) {
   const { mode } = route.params;
   const { colors } = useTheme();
+  const insets = useSafeAreaInsets();
   const { currentCity, options, questionIndex, totalQuestions, score, status, selected, answers, answer, next } =
     useGame(mode);
 
@@ -32,11 +34,13 @@ export default function GameScreen({ route, navigation }) {
   }, [status]);
 
   if (!currentCity || status === 'finished') {
-    return <View style={[styles.container, { backgroundColor: colors.background }]} />;
+    return (
+      <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top + 16 }]} />
+    );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top + 16 }]}>
       <View style={styles.hud}>
         <Text style={[styles.hudText, { color: colors.textSubtle }]}>
           Domanda {questionIndex + 1}/{totalQuestions}
@@ -89,7 +93,7 @@ export default function GameScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 24, paddingTop: 60 },
+  container: { flex: 1, paddingHorizontal: 24 },
   hud: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 24 },
   hudText: { fontSize: 15, fontWeight: '600' },
   questionBox: { alignItems: 'center', marginBottom: 40 },
