@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { ThemeProvider, useTheme } from './src/context/ThemeContext';
 import GameScreen from './src/screens/GameScreen';
 import HomeScreen from './src/screens/HomeScreen';
+import RegionPickerScreen from './src/screens/RegionPickerScreen';
 import ReportScreen from './src/screens/ReportScreen';
 import ResultsScreen from './src/screens/ResultsScreen';
 
@@ -22,6 +23,7 @@ function RootNavigator() {
         }}
       >
         <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="RegionPicker" component={RegionPickerScreen} />
         <Stack.Screen name="Game" component={GameScreen} />
         <Stack.Screen name="Results" component={ResultsScreen} />
         <Stack.Screen name="Report" component={ReportScreen} />

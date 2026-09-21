@@ -4,12 +4,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FreeTextAnswer from '../components/FreeTextAnswer';
 import ItalyRegionMap from '../components/ItalyRegionMap';
 import MultipleChoiceAnswer from '../components/MultipleChoiceAnswer';
+import ProvinceMapAnswer from '../components/ProvinceMapAnswer';
 import { useTheme } from '../context/ThemeContext';
 import { useGame } from '../hooks/useGame';
 import { saveGameResult } from '../storage/scores';
 
 export default function GameScreen({ route, navigation }) {
-  const { mode } = route.params;
+  const { mode, region } = route.params;
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const { currentCity, options, questionIndex, totalQuestions, score, status, selected, answers, answer, next } =
@@ -22,7 +23,7 @@ export default function GameScreen({ route, navigation }) {
     saveGameResult({ score, total: totalQuestions, date: new Date().toISOString(), mode }).then(
       ({ bestScore, isNewBest }) => {
         if (!cancelled) {
-          navigation.replace('Results', { score, total: totalQuestions, bestScore, isNewBest, mode, answers });
+          navigation.replace('Results', { score, total: totalQuestions, bestScore, isNewBest, mode, region, answers });
         }
       }
     );
@@ -53,6 +54,13 @@ export default function GameScreen({ route, navigation }) {
           {mode === 'region' ? 'In quale regione si trova' : 'In quale provincia si trova'}
         </Text>
         <Text style={[styles.cityName, { color: colors.primaryDark }]}>{currentCity.city}?</Text>
+        {currentCity.minor && (
+          <View style={[styles.minorBadge, { backgroundColor: colors.modeActiveBg, borderColor: colors.primary }]}>
+            <Text style={[styles.minorBadgeText, { color: colors.primaryDark }]}>
+              🏘️ Comune minore · {currentCity.region}
+            </Text>
+          </View>
+        )}
       </View>
 
       {mode === 'multiple' && (
@@ -75,6 +83,15 @@ export default function GameScreen({ route, navigation }) {
       )}
       {mode === 'region' && (
         <ItalyRegionMap correctRegion={currentCity.region} status={status} selected={selected} onSelect={answer} />
+      )}
+      {mode === 'minorComuni' && (
+        <ProvinceMapAnswer
+          region={region}
+          correctProvince={currentCity.province}
+          status={status}
+          selected={selected}
+          onSubmit={answer}
+        />
       )}
 
       {status === 'answered' && (
@@ -99,6 +116,14 @@ const styles = StyleSheet.create({
   questionBox: { alignItems: 'center', marginBottom: 40 },
   questionLabel: { fontSize: 16, marginBottom: 6 },
   cityName: { fontSize: 34, fontWeight: '800', textAlign: 'center' },
+  minorBadge: {
+    marginTop: 10,
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  minorBadgeText: { fontSize: 12, fontWeight: '600' },
   nextButton: { marginTop: 32, alignSelf: 'center', paddingVertical: 14, paddingHorizontal: 40, borderRadius: 30 },
   nextButtonText: { fontSize: 16, fontWeight: '700' },
 });

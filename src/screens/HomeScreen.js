@@ -94,7 +94,7 @@ export default function HomeScreen({ navigation }) {
 
       <TouchableOpacity
         style={[styles.startButton, { backgroundColor: colors.primary }]}
-        onPress={() => navigation.navigate('Game', { mode })}
+        onPress={() => (mode === 'minorComuni' ? navigation.navigate('RegionPicker') : navigation.navigate('Game', { mode }))}
         activeOpacity={0.85}
       >
         <Text style={[styles.startButtonText, { color: colors.buttonText }]}>Inizia</Text>

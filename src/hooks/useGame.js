@@ -3,6 +3,7 @@ import { ALL_PROVINCES, CITIES } from '../data/cities';
 
 export const ROUND_LENGTH = 10;
 const OPTIONS_COUNT = 4;
+const MAJOR_POOL = CITIES.filter((c) => !c.minor);
 
 function shuffle(arr) {
   const copy = [...arr];
@@ -13,8 +14,16 @@ function shuffle(arr) {
   return copy;
 }
 
-function pickQuestions() {
-  return shuffle(CITIES).slice(0, ROUND_LENGTH);
+// Il pool "sorgente" di una modalità: comuni minori+maggiori della regione scelta
+// per "Comuni minori", solo città maggiori per tutte le altre modalità.
+function sourcePool(mode, region) {
+  return mode === 'minorComuni' ? CITIES.filter((c) => c.region === region) : MAJOR_POOL;
+}
+
+function pickQuestions(mode, region) {
+  const pool = sourcePool(mode, region);
+  const count = Math.min(ROUND_LENGTH, pool.length);
+  return shuffle(pool).slice(0, count);
 }
 
 function buildOptions(correctProvince) {
@@ -23,8 +32,8 @@ function buildOptions(correctProvince) {
   return shuffle([correctProvince, ...wrongOptions]);
 }
 
-export function useGame(mode = 'multiple') {
-  const [questions, setQuestions] = useState(() => pickQuestions());
+export function useGame(mode = 'multiple', region = null) {
+  const [questions, setQuestions] = useState(() => pickQuestions(mode, region));
   const [questionIndex, setQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [status, setStatus] = useState('playing');
@@ -67,13 +76,26 @@ export function useGame(mode = 'multiple') {
   }, [questionIndex, totalQuestions]);
 
   const restart = useCallback(() => {
-    setQuestions(pickQuestions());
+    setQuestions(pickQuestions(mode, region));
     setQuestionIndex(0);
     setScore(0);
     setSelected(null);
     setStatus('playing');
     setAnswers([]);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, region]);
 
-  return { currentCity, options, questionIndex, totalQuestions, score, status, selected, answers, answer, next, restart };
+  return {
+    currentCity,
+    options,
+    questionIndex,
+    totalQuestions,
+    score,
+    status,
+    selected,
+    answers,
+    answer,
+    next,
+    restart,
+  };
 }
