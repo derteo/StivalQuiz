@@ -1,4 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SURVIVAL_COLORS } from '../constants/survivalTheme';
 import { useTheme } from '../context/ThemeContext';
 
 function getFeedback(ratio) {
@@ -8,27 +9,51 @@ function getFeedback(ratio) {
   return 'Riprova, la geografia si allena!';
 }
 
+function getShowdownFeedback(score) {
+  if (score >= 30) return 'Leggendario. Conosci l\'Italia a memoria 🏆';
+  if (score >= 15) return 'Impressionante sopravvivenza!';
+  if (score >= 5) return 'Bel tentativo, puoi fare di meglio!';
+  return 'La prima città è sempre la più dura. Riprova!';
+}
+
 export default function ResultsScreen({ route, navigation }) {
-  const { score, total, bestScore, mode, answers } = route.params;
-  const { colors } = useTheme();
+  const { score, total, bestScore, mode, region, answers } = route.params;
+  const { colors: themeColors } = useTheme();
+  const isShowdown = mode === 'showdown';
+  const colors = isShowdown ? SURVIVAL_COLORS : themeColors;
   const ratio = total > 0 ? score / total : 0;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.title, { color: colors.text }]}>Round completato</Text>
+      <Text style={[styles.title, { color: colors.text }]}>
+        {isShowdown ? '💀 Sei sopravvissuto...' : 'Round completato'}
+      </Text>
+      {region && <Text style={[styles.regionLabel, { color: colors.textMuted }]}>Regione: {region}</Text>}
 
       <View style={[styles.scoreBox, { backgroundColor: colors.card }]}>
-        <Text style={[styles.scoreValue, { color: colors.primaryDark }]}>
-          {score}/{total}
-        </Text>
-        <Text style={[styles.feedback, { color: colors.textSubtle }]}>{getFeedback(ratio)}</Text>
+        {isShowdown ? (
+          <>
+            <Text style={[styles.scoreValue, { color: colors.primaryDark }]}>{score}</Text>
+            <Text style={[styles.feedback, { color: colors.textSubtle }]}>città di fila corrette</Text>
+            <Text style={[styles.feedback, { color: colors.textSubtle, marginTop: 6 }]}>
+              {getShowdownFeedback(score)}
+            </Text>
+          </>
+        ) : (
+          <>
+            <Text style={[styles.scoreValue, { color: colors.primaryDark }]}>
+              {score}/{total}
+            </Text>
+            <Text style={[styles.feedback, { color: colors.textSubtle }]}>{getFeedback(ratio)}</Text>
+          </>
+        )}
       </View>
 
       <Text style={[styles.bestScoreText, { color: colors.textMuted }]}>Miglior punteggio: {bestScore}</Text>
 
       <TouchableOpacity
         style={[styles.primaryButton, { backgroundColor: colors.primary }]}
-        onPress={() => navigation.replace('Game', { mode })}
+        onPress={() => navigation.replace('Game', { mode, region })}
         activeOpacity={0.85}
       >
         <Text style={[styles.primaryButtonText, { color: colors.buttonText }]}>Gioca ancora</Text>
@@ -51,7 +76,8 @@ export default function ResultsScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28 },
-  title: { fontSize: 24, fontWeight: '700', marginBottom: 24 },
+  title: { fontSize: 24, fontWeight: '700', marginBottom: 4 },
+  regionLabel: { fontSize: 13, fontWeight: '600', marginBottom: 24 },
   scoreBox: { borderRadius: 20, paddingVertical: 28, paddingHorizontal: 48, alignItems: 'center', marginBottom: 20 },
   scoreValue: { fontSize: 44, fontWeight: '800', marginBottom: 8 },
   feedback: { fontSize: 15, textAlign: 'center' },

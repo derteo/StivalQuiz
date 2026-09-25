@@ -7,6 +7,11 @@ export const GAME_MODES = [
     label: 'Comuni minori',
     hint: 'Scegli una regione e colloca i comuni minori nelle province giuste',
   },
+  {
+    id: 'showdown',
+    label: 'Showdown (sopravvivenza)',
+    hint: 'Continua finché non sbagli: fino a dove riesci ad arrivare?',
+  },
 ];
 
 export const MODE_LABELS = Object.fromEntries(GAME_MODES.map((m) => [m.id, m.label]));

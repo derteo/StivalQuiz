@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FreeTextAnswer from '../components/FreeTextAnswer';
+import { SURVIVAL_COLORS } from '../constants/survivalTheme';
 import ItalyRegionMap from '../components/ItalyRegionMap';
 import MultipleChoiceAnswer from '../components/MultipleChoiceAnswer';
 import ProvinceMapAnswer from '../components/ProvinceMapAnswer';
@@ -11,22 +12,22 @@ import { saveGameResult } from '../storage/scores';
 
 export default function GameScreen({ route, navigation }) {
   const { mode, region } = route.params;
-  const { colors } = useTheme();
+  const { colors: themeColors } = useTheme();
+  const colors = mode === 'showdown' ? SURVIVAL_COLORS : themeColors;
   const insets = useSafeAreaInsets();
   const { currentCity, options, questionIndex, totalQuestions, score, status, selected, answers, answer, next } =
-    useGame(mode);
+    useGame(mode, region);
 
   useEffect(() => {
     if (status !== 'finished') return;
     let cancelled = false;
 
-    saveGameResult({ score, total: totalQuestions, date: new Date().toISOString(), mode }).then(
-      ({ bestScore, isNewBest }) => {
-        if (!cancelled) {
-          navigation.replace('Results', { score, total: totalQuestions, bestScore, isNewBest, mode, region, answers });
-        }
+    const total = mode === 'showdown' ? score + 1 : totalQuestions;
+    saveGameResult({ score, total, date: new Date().toISOString(), mode }).then(({ bestScore, isNewBest }) => {
+      if (!cancelled) {
+        navigation.replace('Results', { score, total, bestScore, isNewBest, mode, region, answers });
       }
-    );
+    });
 
     return () => {
       cancelled = true;
@@ -44,9 +45,11 @@ export default function GameScreen({ route, navigation }) {
     <View style={[styles.container, { backgroundColor: colors.background, paddingTop: insets.top + 16 }]}>
       <View style={styles.hud}>
         <Text style={[styles.hudText, { color: colors.textSubtle }]}>
-          Domanda {questionIndex + 1}/{totalQuestions}
+          {mode === 'showdown' ? '🔥 Showdown' : `Domanda ${questionIndex + 1}/${totalQuestions}`}
         </Text>
-        <Text style={[styles.hudText, { color: colors.textSubtle }]}>Punteggio: {score}</Text>
+        <Text style={[styles.hudText, { color: colors.textSubtle }]}>
+          {mode === 'showdown' ? `Streak: ${score}` : `Punteggio: ${score}`}
+        </Text>
       </View>
 
       <View style={styles.questionBox}>
@@ -63,7 +66,7 @@ export default function GameScreen({ route, navigation }) {
         )}
       </View>
 
-      {mode === 'multiple' && (
+      {(mode === 'multiple' || mode === 'showdown') && (
         <MultipleChoiceAnswer
           options={options}
           correctProvince={currentCity.province}
@@ -101,7 +104,13 @@ export default function GameScreen({ route, navigation }) {
           activeOpacity={0.85}
         >
           <Text style={[styles.nextButtonText, { color: colors.buttonText }]}>
-            {questionIndex + 1 >= totalQuestions ? 'Vedi risultato' : 'Avanti'}
+            {mode === 'showdown'
+              ? answers[answers.length - 1]?.isCorrect
+                ? '🔥 Avanti'
+                : '💀 Vedi risultato'
+              : questionIndex + 1 >= totalQuestions
+                ? 'Vedi risultato'
+                : 'Avanti'}
           </Text>
         </TouchableOpacity>
       )}

@@ -21,6 +21,9 @@ function sourcePool(mode, region) {
 }
 
 function pickQuestions(mode, region) {
+  // La modalità Showdown pesca dall'intero pool maggiore e prosegue finché non
+  // si sbaglia: il round è potenzialmente infinito, si allunga in useGame.next().
+  if (mode === 'showdown') return shuffle(MAJOR_POOL);
   const pool = sourcePool(mode, region);
   const count = Math.min(ROUND_LENGTH, pool.length);
   return shuffle(pool).slice(0, count);
@@ -43,9 +46,10 @@ export function useGame(mode = 'multiple', region = null) {
   const currentCity = questions[questionIndex];
   const totalQuestions = questions.length;
   const targetField = mode === 'region' ? 'region' : 'province';
+  const showdown = mode === 'showdown';
 
   const options = useMemo(
-    () => (currentCity && mode === 'multiple' ? buildOptions(currentCity.province) : []),
+    () => (currentCity && (mode === 'multiple' || mode === 'showdown') ? buildOptions(currentCity.province) : []),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentCity?.city, mode]
   );
@@ -66,6 +70,18 @@ export function useGame(mode = 'multiple', region = null) {
   );
 
   const next = useCallback(() => {
+    if (showdown) {
+      const lastCorrect = answers[answers.length - 1]?.isCorrect;
+      if (!lastCorrect) {
+        setStatus('finished');
+        return;
+      }
+      setQuestions((qs) => (questionIndex + 1 >= qs.length ? [...qs, ...shuffle(MAJOR_POOL)] : qs));
+      setQuestionIndex((i) => i + 1);
+      setSelected(null);
+      setStatus('playing');
+      return;
+    }
     if (questionIndex + 1 >= totalQuestions) {
       setStatus('finished');
       return;
@@ -73,7 +89,7 @@ export function useGame(mode = 'multiple', region = null) {
     setQuestionIndex((i) => i + 1);
     setSelected(null);
     setStatus('playing');
-  }, [questionIndex, totalQuestions]);
+  }, [questionIndex, totalQuestions, showdown, answers]);
 
   const restart = useCallback(() => {
     setQuestions(pickQuestions(mode, region));
