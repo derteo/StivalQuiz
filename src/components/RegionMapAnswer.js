@@ -2,14 +2,21 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 import ItalyRegionMap from './ItalyRegionMap';
 
-export default function RegionMapAnswer({ correctRegion, status, selected, onSubmit }) {
-  const { colors } = useTheme();
+export default function RegionMapAnswer({ correctRegion, status, selected, onSubmit, colors: colorsOverride }) {
+  const { colors: themeColors } = useTheme();
+  const colors = colorsOverride ?? themeColors;
   const answered = status === 'answered';
   const isCorrect = selected === correctRegion;
 
   return (
     <View>
-      <ItalyRegionMap correctRegion={correctRegion} status={status} selected={selected} onSelect={onSubmit} />
+      <ItalyRegionMap
+        correctRegion={correctRegion}
+        status={status}
+        selected={selected}
+        onSelect={onSubmit}
+        colors={colorsOverride}
+      />
 
       {!answered && <Text style={[styles.hint, { color: colors.textMuted }]}>Tocca la regione sulla mappa</Text>}
 

@@ -1,18 +1,25 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+import { SURVIVAL_COLORS } from '../constants/survivalTheme';
 import { useTheme } from '../context/ThemeContext';
 import { ITALY_MAP_VIEWBOX, ITALY_REGIONS_PATHS } from '../data/italyRegionsMap';
 
-export default function RegionPickerScreen({ navigation }) {
-  const { colors } = useTheme();
+export default function RegionPickerScreen({ route, navigation }) {
+  const showdown = route.params?.showdown ?? false;
+  const { colors: themeColors } = useTheme();
+  const colors = showdown ? SURVIVAL_COLORS : themeColors;
   const [selected, setSelected] = useState(null);
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: colors.background }]}>
-      <Text style={[styles.title, { color: colors.text }]}>Scegli una regione</Text>
+      <Text style={[styles.title, { color: colors.text }]}>
+        {showdown ? '🔥 Scegli una regione' : 'Scegli una regione'}
+      </Text>
       <Text style={[styles.subtitle, { color: colors.textSubtle }]}>
-        Giocherai con i comuni minori di quella regione, da collocare nella provincia giusta
+        {showdown
+          ? 'Sopravvivenza tra i comuni minori di quella regione: continua finché non sbagli'
+          : 'Giocherai con i comuni minori di quella regione, da collocare nella provincia giusta'}
       </Text>
 
       <Svg viewBox={ITALY_MAP_VIEWBOX} style={styles.map}>
@@ -39,10 +46,12 @@ export default function RegionPickerScreen({ navigation }) {
       <TouchableOpacity
         style={[styles.startButton, { backgroundColor: selected ? colors.primary : colors.border }]}
         disabled={!selected}
-        onPress={() => navigation.replace('Game', { mode: 'minorComuni', region: selected })}
+        onPress={() => navigation.replace('Game', { mode: 'minorComuni', region: selected, showdown })}
         activeOpacity={0.85}
       >
-        <Text style={[styles.startButtonText, { color: colors.buttonText }]}>Inizia a giocare</Text>
+        <Text style={[styles.startButtonText, { color: colors.buttonText }]}>
+          {showdown ? '🔥 Inizia in Showdown' : 'Inizia a giocare'}
+        </Text>
       </TouchableOpacity>
     </ScrollView>
   );

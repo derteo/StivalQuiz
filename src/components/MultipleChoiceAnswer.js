@@ -1,8 +1,9 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../context/ThemeContext';
 
-export default function MultipleChoiceAnswer({ options, correctProvince, status, selected, onAnswer }) {
-  const { colors } = useTheme();
+export default function MultipleChoiceAnswer({ options, correctProvince, status, selected, onAnswer, colors: colorsOverride }) {
+  const { colors: themeColors } = useTheme();
+  const colors = colorsOverride ?? themeColors;
   const answered = status === 'answered';
 
   return (

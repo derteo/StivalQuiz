@@ -2,8 +2,9 @@ import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../context/ThemeContext';
 import { ITALY_MAP_VIEWBOX, ITALY_REGIONS_PATHS } from '../data/italyRegionsMap';
 
-export default function ItalyRegionMap({ correctRegion, status, selected, onSelect }) {
-  const { colors } = useTheme();
+export default function ItalyRegionMap({ correctRegion, status, selected, onSelect, colors: colorsOverride }) {
+  const { colors: themeColors } = useTheme();
+  const colors = colorsOverride ?? themeColors;
   const answered = status === 'answered';
 
   return (

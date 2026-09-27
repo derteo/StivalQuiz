@@ -1,9 +1,11 @@
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SURVIVAL_COLORS } from '../constants/survivalTheme';
 import { useTheme } from '../context/ThemeContext';
 
 export default function ReportScreen({ route, navigation }) {
-  const { answers, mode } = route.params;
-  const { colors } = useTheme();
+  const { answers, mode, showdown } = route.params;
+  const { colors: themeColors } = useTheme();
+  const colors = showdown ? SURVIVAL_COLORS : themeColors;
   const answerLabel = mode === 'region' ? 'Regione' : 'Provincia';
 
   return (
@@ -49,16 +51,60 @@ export default function ReportScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: 24, paddingTop: 32 },
-  title: { fontSize: 22, fontWeight: '800', marginBottom: 16, textAlign: 'center' },
-  scrollContent: { paddingBottom: 16, gap: 10 },
-  row: { borderRadius: 14, borderWidth: 2, padding: 14 },
-  rowHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
-  questionNumber: { fontSize: 13, fontWeight: '600' },
-  cityName: { fontSize: 16, fontWeight: '700', flex: 1 },
-  icon: { fontSize: 16 },
-  answerLine: { fontSize: 14, marginTop: 2 },
-  bold: { fontWeight: '700' },
-  closeButton: { marginVertical: 16, alignSelf: 'center', paddingVertical: 14, paddingHorizontal: 40, borderRadius: 30 },
-  closeButtonText: { fontSize: 16, fontWeight: '700' },
+  container: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 32,
+  },
+  title: {
+    fontSize: 22,
+    fontWeight: '800',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  scrollContent: {
+    paddingBottom: 16,
+    gap: 10,
+  },
+  row: {
+    borderRadius: 14,
+    borderWidth: 2,
+    padding: 14,
+  },
+  rowHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 6,
+  },
+  questionNumber: {
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  cityName: {
+    fontSize: 16,
+    fontWeight: '700',
+    flex: 1,
+  },
+  icon: {
+    fontSize: 16,
+  },
+  answerLine: {
+    fontSize: 14,
+    marginTop: 2,
+  },
+  bold: {
+    fontWeight: '700',
+  },
+  closeButton: {
+    marginVertical: 16,
+    alignSelf: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 30,
+  },
+  closeButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
 });

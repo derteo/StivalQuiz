@@ -20,11 +20,11 @@ function sourcePool(mode, region) {
   return mode === 'minorComuni' ? CITIES.filter((c) => c.region === region) : MAJOR_POOL;
 }
 
-function pickQuestions(mode, region) {
-  // La modalità Showdown pesca dall'intero pool maggiore e prosegue finché non
-  // si sbaglia: il round è potenzialmente infinito, si allunga in useGame.next().
-  if (mode === 'showdown') return shuffle(MAJOR_POOL);
+function pickQuestions(mode, region, showdown) {
   const pool = sourcePool(mode, region);
+  // In Showdown il pool viene mescolato per intero e si allunga on demand in
+  // useGame.next(): il round è potenzialmente infinito, finisce solo su errore.
+  if (showdown) return shuffle(pool);
   const count = Math.min(ROUND_LENGTH, pool.length);
   return shuffle(pool).slice(0, count);
 }
@@ -35,21 +35,22 @@ function buildOptions(correctProvince) {
   return shuffle([correctProvince, ...wrongOptions]);
 }
 
-export function useGame(mode = 'multiple', region = null) {
-  const [questions, setQuestions] = useState(() => pickQuestions(mode, region));
+export function useGame(mode = 'multiple', region = null, showdown = false) {
+  const [questions, setQuestions] = useState(() => pickQuestions(mode, region, showdown));
   const [questionIndex, setQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
+  const [streak, setStreak] = useState(0);
   const [status, setStatus] = useState('playing');
   const [selected, setSelected] = useState(null);
   const [answers, setAnswers] = useState([]);
+  const [lastCorrect, setLastCorrect] = useState(null);
 
   const currentCity = questions[questionIndex];
   const totalQuestions = questions.length;
   const targetField = mode === 'region' ? 'region' : 'province';
-  const showdown = mode === 'showdown';
 
   const options = useMemo(
-    () => (currentCity && (mode === 'multiple' || mode === 'showdown') ? buildOptions(currentCity.province) : []),
+    () => (currentCity && mode === 'multiple' ? buildOptions(currentCity.province) : []),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentCity?.city, mode]
   );
@@ -60,23 +61,30 @@ export function useGame(mode = 'multiple', region = null) {
       setSelected(value);
       setStatus('answered');
       const isCorrect = value === currentCity[targetField];
+      setLastCorrect(isCorrect);
       setAnswers((prev) => [
         ...prev,
         { city: currentCity.city, correctAnswer: currentCity[targetField], givenAnswer: value, isCorrect },
       ]);
-      if (isCorrect) setScore((s) => s + 1);
+      if (isCorrect) {
+        setScore((s) => s + 1);
+        setStreak((s) => s + 1);
+      } else {
+        setStreak(0);
+      }
     },
     [status, currentCity, targetField]
   );
 
   const next = useCallback(() => {
     if (showdown) {
-      const lastCorrect = answers[answers.length - 1]?.isCorrect;
       if (!lastCorrect) {
         setStatus('finished');
         return;
       }
-      setQuestions((qs) => (questionIndex + 1 >= qs.length ? [...qs, ...shuffle(MAJOR_POOL)] : qs));
+      setQuestions((qs) =>
+        questionIndex + 1 >= qs.length ? [...qs, ...shuffle(sourcePool(mode, region))] : qs
+      );
       setQuestionIndex((i) => i + 1);
       setSelected(null);
       setStatus('playing');
@@ -89,17 +97,19 @@ export function useGame(mode = 'multiple', region = null) {
     setQuestionIndex((i) => i + 1);
     setSelected(null);
     setStatus('playing');
-  }, [questionIndex, totalQuestions, showdown, answers]);
+  }, [questionIndex, totalQuestions, showdown, lastCorrect, mode, region]);
 
   const restart = useCallback(() => {
-    setQuestions(pickQuestions(mode, region));
+    setQuestions(pickQuestions(mode, region, showdown));
     setQuestionIndex(0);
     setScore(0);
+    setStreak(0);
     setSelected(null);
     setStatus('playing');
     setAnswers([]);
+    setLastCorrect(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mode, region]);
+  }, [mode, region, showdown]);
 
   return {
     currentCity,
@@ -107,8 +117,10 @@ export function useGame(mode = 'multiple', region = null) {
     questionIndex,
     totalQuestions,
     score,
+    streak,
     status,
     selected,
+    lastCorrect,
     answers,
     answer,
     next,

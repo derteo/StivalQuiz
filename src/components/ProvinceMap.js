@@ -2,8 +2,9 @@ import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../context/ThemeContext';
 import { PROVINCES_BY_REGION } from '../data/provincesByRegion';
 
-export default function ProvinceMap({ region, correctProvince, status, selected, onSelect }) {
-  const { colors } = useTheme();
+export default function ProvinceMap({ region, correctProvince, status, selected, onSelect, colors: colorsOverride }) {
+  const { colors: themeColors } = useTheme();
+  const colors = colorsOverride ?? themeColors;
   const answered = status === 'answered';
   const regionData = PROVINCES_BY_REGION[region];
 

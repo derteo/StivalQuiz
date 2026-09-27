@@ -5,8 +5,9 @@ import { ALL_PROVINCES } from '../data/cities';
 
 const MAX_SUGGESTIONS = 5;
 
-export default function FreeTextAnswer({ correctProvince, status, selected, onSubmit }) {
-  const { colors } = useTheme();
+export default function FreeTextAnswer({ correctProvince, status, selected, onSubmit, colors: colorsOverride }) {
+  const { colors: themeColors } = useTheme();
+  const colors = colorsOverride ?? themeColors;
   const [text, setText] = useState('');
   const answered = status === 'answered';
 

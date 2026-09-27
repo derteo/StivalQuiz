@@ -17,14 +17,19 @@ function getShowdownFeedback(score) {
 }
 
 export default function ResultsScreen({ route, navigation }) {
-  const { score, total, bestScore, mode, region, answers } = route.params;
+  const { score, total, bestScore, isNewBest, mode, region, showdown, answers } = route.params;
   const { colors: themeColors } = useTheme();
-  const isShowdown = mode === 'showdown';
+  const isShowdown = !!showdown;
   const colors = isShowdown ? SURVIVAL_COLORS : themeColors;
   const ratio = total > 0 ? score / total : 0;
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
+      {isNewBest && (
+        <Text style={[styles.newBest, isShowdown && { color: colors.primaryDark }]}>
+          {isShowdown ? '🔥 Nuovo record assoluto!' : 'Nuovo record!'}
+        </Text>
+      )}
       <Text style={[styles.title, { color: colors.text }]}>
         {isShowdown ? '💀 Sei sopravvissuto...' : 'Round completato'}
       </Text>
@@ -53,15 +58,17 @@ export default function ResultsScreen({ route, navigation }) {
 
       <TouchableOpacity
         style={[styles.primaryButton, { backgroundColor: colors.primary }]}
-        onPress={() => navigation.replace('Game', { mode, region })}
+        onPress={() => navigation.replace('Game', { mode, region, showdown })}
         activeOpacity={0.85}
       >
-        <Text style={[styles.primaryButtonText, { color: colors.buttonText }]}>Gioca ancora</Text>
+        <Text style={[styles.primaryButtonText, { color: colors.buttonText }]}>
+          {isShowdown ? '🔥 Rientra in Showdown' : 'Gioca ancora'}
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={[styles.secondaryOutlineButton, { borderColor: colors.border }]}
-        onPress={() => navigation.navigate('Report', { answers, mode })}
+        onPress={() => navigation.navigate('Report', { answers, mode, showdown })}
         activeOpacity={0.85}
       >
         <Text style={[styles.secondaryOutlineButtonText, { color: colors.text }]}>Rivedi le risposte</Text>
@@ -75,15 +82,65 @@ export default function ResultsScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 28 },
-  title: { fontSize: 24, fontWeight: '700', marginBottom: 4 },
-  regionLabel: { fontSize: 13, fontWeight: '600', marginBottom: 24 },
-  scoreBox: { borderRadius: 20, paddingVertical: 28, paddingHorizontal: 48, alignItems: 'center', marginBottom: 20 },
-  scoreValue: { fontSize: 44, fontWeight: '800', marginBottom: 8 },
-  feedback: { fontSize: 15, textAlign: 'center' },
-  bestScoreText: { fontSize: 14, marginBottom: 36 },
-  primaryButton: { paddingVertical: 16, paddingHorizontal: 48, borderRadius: 30, marginBottom: 14, width: '100%', alignItems: 'center' },
-  primaryButtonText: { fontSize: 17, fontWeight: '700' },
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 28,
+  },
+  newBest: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#f9a825',
+    marginBottom: 8,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  regionLabel: {
+    fontSize: 13,
+    fontWeight: '600',
+    marginBottom: 24,
+  },
+  scoreBox: {
+    borderRadius: 20,
+    paddingVertical: 28,
+    paddingHorizontal: 48,
+    alignItems: 'center',
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
+  },
+  scoreValue: {
+    fontSize: 44,
+    fontWeight: '800',
+    marginBottom: 8,
+  },
+  feedback: {
+    fontSize: 15,
+    textAlign: 'center',
+  },
+  bestScoreText: {
+    fontSize: 14,
+    marginBottom: 36,
+  },
+  primaryButton: {
+    paddingVertical: 16,
+    paddingHorizontal: 48,
+    borderRadius: 30,
+    marginBottom: 14,
+    width: '100%',
+    alignItems: 'center',
+  },
+  primaryButtonText: {
+    fontSize: 17,
+    fontWeight: '700',
+  },
   secondaryOutlineButton: {
     borderWidth: 2,
     borderRadius: 30,
@@ -93,7 +150,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 14,
   },
-  secondaryOutlineButtonText: { fontSize: 16, fontWeight: '700' },
-  secondaryButton: { paddingVertical: 10 },
-  secondaryButtonText: { fontSize: 15, fontWeight: '600' },
+  secondaryOutlineButtonText: {
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  secondaryButton: {
+    paddingVertical: 10,
+  },
+  secondaryButtonText: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
 });
