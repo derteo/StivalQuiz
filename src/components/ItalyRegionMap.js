@@ -7,11 +7,20 @@ export default function ItalyRegionMap({ correctRegion, status, selected, onSele
   const colors = colorsOverride ?? themeColors;
   const answered = status === 'answered';
 
+  // Le regioni evidenziate (corretta/selezionata) vanno disegnate per ultime,
+  // altrimenti una regione confinante disegnata dopo ne coprirebbe il bordo.
+  const orderedRegions = [...ITALY_REGIONS_PATHS].sort((a, b) => {
+    const aHighlighted = a.name === correctRegion || a.name === selected ? 1 : 0;
+    const bHighlighted = b.name === correctRegion || b.name === selected ? 1 : 0;
+    return aHighlighted - bHighlighted;
+  });
+
   return (
     <Svg viewBox={ITALY_MAP_VIEWBOX} style={{ width: '100%', aspectRatio: 441.5 / 513.9 }}>
-      {ITALY_REGIONS_PATHS.map(({ name, d }) => {
+      {orderedRegions.map(({ name, d }) => {
         const isCorrect = name === correctRegion;
         const isSelected = name === selected;
+        const highlighted = answered && (isCorrect || isSelected);
 
         let fill = colors.card;
         let stroke = colors.border;
@@ -31,7 +40,7 @@ export default function ItalyRegionMap({ correctRegion, status, selected, onSele
             d={d}
             fill={fill}
             stroke={stroke}
-            strokeWidth={1.2}
+            strokeWidth={highlighted ? 2.2 : 1.2}
             strokeLinejoin="round"
             onPress={() => !answered && onSelect(name)}
           />

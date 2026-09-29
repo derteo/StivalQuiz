@@ -39,7 +39,18 @@ export default function MultipleChoiceAnswer({ options, correctProvince, status,
 }
 
 const styles = StyleSheet.create({
-  options: { gap: 12 },
-  option: { borderRadius: 14, paddingVertical: 16, paddingHorizontal: 20, borderWidth: 2 },
-  optionText: { fontSize: 17, fontWeight: '600', textAlign: 'center' },
+  options: {
+    gap: 12,
+  },
+  option: {
+    borderRadius: 14,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    borderWidth: 2,
+  },
+  optionText: {
+    fontSize: 17,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
 });

@@ -35,6 +35,15 @@ export default function ProvinceMapAnswer({ region, correctProvince, status, sel
 }
 
 const styles = StyleSheet.create({
-  hint: { marginTop: 10, fontSize: 13, textAlign: 'center' },
-  feedback: { marginTop: 14, fontSize: 15, fontWeight: '600', textAlign: 'center' },
+  hint: {
+    marginTop: 10,
+    fontSize: 13,
+    textAlign: 'center',
+  },
+  feedback: {
+    marginTop: 14,
+    fontSize: 15,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
 });

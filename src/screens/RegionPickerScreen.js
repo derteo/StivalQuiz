@@ -23,20 +23,22 @@ export default function RegionPickerScreen({ route, navigation }) {
       </Text>
 
       <Svg viewBox={ITALY_MAP_VIEWBOX} style={styles.map}>
-        {ITALY_REGIONS_PATHS.map(({ name, d }) => {
-          const isSelected = name === selected;
-          return (
-            <Path
-              key={name}
-              d={d}
-              fill={isSelected ? colors.modeActiveBg : colors.card}
-              stroke={isSelected ? colors.primary : colors.border}
-              strokeWidth={isSelected ? 2.2 : 1.2}
-              strokeLinejoin="round"
-              onPress={() => setSelected(name)}
-            />
-          );
-        })}
+        {[...ITALY_REGIONS_PATHS]
+          .sort((a, b) => (a.name === selected ? 1 : 0) - (b.name === selected ? 1 : 0))
+          .map(({ name, d }) => {
+            const isSelected = name === selected;
+            return (
+              <Path
+                key={name}
+                d={d}
+                fill={isSelected ? colors.modeActiveBg : colors.card}
+                stroke={isSelected ? colors.primary : colors.border}
+                strokeWidth={isSelected ? 2.2 : 1.2}
+                strokeLinejoin="round"
+                onPress={() => setSelected(name)}
+              />
+            );
+          })}
       </Svg>
 
       <Text style={[styles.selectedLabel, { color: colors.primaryDark }]}>
@@ -58,11 +60,42 @@ export default function RegionPickerScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flexGrow: 1, alignItems: 'center', paddingHorizontal: 24, paddingVertical: 32 },
-  title: { fontSize: 24, fontWeight: '800', textAlign: 'center', marginBottom: 8 },
-  subtitle: { fontSize: 14, textAlign: 'center', marginBottom: 20, lineHeight: 20 },
-  map: { width: '100%', aspectRatio: 441.5 / 513.9, marginBottom: 16 },
-  selectedLabel: { fontSize: 17, fontWeight: '700', marginBottom: 20, textAlign: 'center' },
-  startButton: { paddingVertical: 16, paddingHorizontal: 48, borderRadius: 30 },
-  startButtonText: { fontSize: 18, fontWeight: '700' },
+  container: {
+    flexGrow: 1,
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 32,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '800',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 20,
+  },
+  map: {
+    width: '100%',
+    aspectRatio: 441.5 / 513.9,
+    marginBottom: 16,
+  },
+  selectedLabel: {
+    fontSize: 17,
+    fontWeight: '700',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  startButton: {
+    paddingVertical: 16,
+    paddingHorizontal: 48,
+    borderRadius: 30,
+  },
+  startButtonText: {
+    fontSize: 18,
+    fontWeight: '700',
+  },
 });

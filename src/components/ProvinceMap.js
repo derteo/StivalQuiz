@@ -12,11 +12,20 @@ export default function ProvinceMap({ region, correctProvince, status, selected,
 
   const [, , w, h] = regionData.viewBox.split(' ').map(Number);
 
+  // Le province evidenziate (corretta/selezionata) vanno disegnate per ultime,
+  // altrimenti una provincia confinante disegnata dopo ne coprirebbe il bordo.
+  const orderedProvinces = [...regionData.provinces].sort((a, b) => {
+    const aHighlighted = a.name === correctProvince || a.name === selected ? 1 : 0;
+    const bHighlighted = b.name === correctProvince || b.name === selected ? 1 : 0;
+    return aHighlighted - bHighlighted;
+  });
+
   return (
     <Svg viewBox={regionData.viewBox} style={{ width: '100%', aspectRatio: w / h }}>
-      {regionData.provinces.map(({ name, d }) => {
+      {orderedProvinces.map(({ name, d }) => {
         const isCorrect = name === correctProvince;
         const isSelected = name === selected;
+        const highlighted = answered && (isCorrect || isSelected);
 
         let fill = colors.card;
         let stroke = colors.border;
@@ -36,7 +45,7 @@ export default function ProvinceMap({ region, correctProvince, status, selected,
             d={d}
             fill={fill}
             stroke={stroke}
-            strokeWidth={1.2}
+            strokeWidth={highlighted ? 2.2 : 1.2}
             strokeLinejoin="round"
             onPress={() => !answered && onSelect(name)}
           />
