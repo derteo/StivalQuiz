@@ -43,3 +43,4 @@ yarn-error.*
 # Config locale strumenti di sviluppo
 AGENTS.md
 CLAUDE.md
+.claude/
