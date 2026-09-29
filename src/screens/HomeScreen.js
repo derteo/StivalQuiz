@@ -57,7 +57,7 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.themeToggleIcon}>{scheme === 'dark' ? '☀️' : '🌙'}</Text>
       </TouchableOpacity>
 
-      <Text style={[styles.title, { color: colors.primaryDark }]}>Indovina la Provincia</Text>
+      <Text style={[styles.title, { color: colors.primaryDark }]}>StivalQuiz</Text>
       <Text style={[styles.subtitle, { color: colors.textSubtle }]}>
         Ti mostriamo una città italiana: tocca a te indovinare dove si trova!
       </Text>

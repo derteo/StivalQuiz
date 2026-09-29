@@ -1,4 +1,4 @@
-# Indovina la Provincia
+# StivalQuiz
 
 App mobile in **React Native (Expo)** per allenarsi sulla geografia italiana: viene mostrato il nome di una città (o di un piccolo comune) e bisogna indovinare in quale **provincia** (o **regione**) si trova, in quattro modalità di gioco diverse, ciascuna giocabile in versione normale o "Showdown" (sopravvivenza). Punteggi e statistiche vengono salvati in locale sul dispositivo.
 
@@ -62,7 +62,7 @@ Non serve Android Studio, Xcode né alcun emulatore: si può testare l'app diret
 
 ```bash
 git clone <url-del-repo>
-cd provinceGameReact
+cd StivalQuiz
 npm install
 npm start
 ```
